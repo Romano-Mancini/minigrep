@@ -1,3 +1,7 @@
+//! Personal implementation of linux `grep` command.
+//! Supports running with IGNORE_CASE=1 variable in order
+//! to do case insensitive queries.
+
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     contents
         .lines()
