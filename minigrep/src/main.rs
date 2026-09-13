@@ -7,8 +7,7 @@ use minigrep::search;
 use minigrep::search_case_insensitive;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let config: Config = Config::new(&args).unwrap_or_else(|err: &str| {
+    let config: Config = Config::new(env::args()).unwrap_or_else(|err: &str| {
         eprintln!("An error occurred: {err}");
         process::exit(1);
     });
@@ -26,14 +25,22 @@ struct Config {
 }
 
 impl Config {
-    fn new(args: &[String]) -> Result<Self, &str> {
-        if args.len() < 3 {
-            return Err("Not enough arguments.");
-        }
+    fn new(mut args: impl Iterator<Item = String>) -> Result<Self, &'static str> {
+        args.next();
+
+        let query = match args.next() {
+            Some(q) => q,
+            None => return Err("No query was provided."),
+        };
+
+        let file_path = match args.next() {
+            Some(q) => q,
+            None => return Err("No file path was provided."),
+        };
 
         Ok(Config {
-            query: args[1].clone(),
-            file_path: args[2].clone(),
+            query: query,
+            file_path: file_path,
             ignore_case: env::var("IGNORE_CASE").is_ok(),
         })
     }
